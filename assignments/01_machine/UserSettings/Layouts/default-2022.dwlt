@@ -331,15 +331,14 @@ MonoBehaviour:
   m_LastFolders:
   - Assets
   m_LastFoldersGridSize: -1
-  m_LastProjectPath: C:\Users\jarola\OneDrive - american.edu\Documents\College classes\2023\Fall\csc
-    470\csc470-fall2023\assignments\01_machine
+  m_LastProjectPath: W:\assignments\01_machine
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: d8050000
-    m_LastClickedID: 1496
-    m_ExpandedIDs: 00000000d805000000ca9a3bffffff7f
+    m_SelectedIDs: c6400000
+    m_LastClickedID: 16582
+    m_ExpandedIDs: 00000000c640000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -367,7 +366,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 
+    m_ExpandedIDs: 00000000c6400000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -507,9 +506,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: a4f5ffff
-      m_LastClickedID: -2652
-      m_ExpandedIDs: aef5ffff
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: 40fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -913,7 +912,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.032555003, y: 0.5597437, z: -0.022014216, w: -0.8277356}
     speed: 2
-    m_Value: {x: -0.033796508, y: 0.559709, z: -0.02285377, w: -0.82768434}
+    m_Value: {x: -0.032555003, y: 0.5597437, z: -0.022014216, w: -0.82773566}
   m_Size:
     m_Target: 10
     speed: 2
