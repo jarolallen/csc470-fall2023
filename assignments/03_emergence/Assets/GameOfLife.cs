@@ -42,7 +42,8 @@ public class GameOfLife : MonoBehaviour
                 cells[x, y] = cellObj.GetComponent<CellScript>();
                 cells[x, y].x = x;
                 cells[x, y].y = y;
-                //cells[x, y].alive = (Random.value < 0.2f);
+                var random = new System.Random();
+                cells[x, y].alive = (random.Next(2) == 1);
             }
         }
     }
