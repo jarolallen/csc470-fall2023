@@ -25,6 +25,7 @@ public class CellScript : MonoBehaviour
 
         rend = gameObject.GetComponentInChildren<Renderer>();
         UpdateColor();
+        InvokeRepeating("NextGen", 0.2f, 0.2f); //feels better if it updates slower
     }
 
     // Update is called once per frame
@@ -32,7 +33,7 @@ public class CellScript : MonoBehaviour
     {
         //if (Input.GetKeyDown(KeyCode.Space))
         //{
-            NextGen();
+            //NextGen();
         //}
     }
 
@@ -100,6 +101,16 @@ public class CellScript : MonoBehaviour
             alive = true;
         }
         UpdateColor();
+    }
+    //kill the cell when a ball hits it
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == ("ball"))
+        {
+            //Debug.Log("Do something else here");
+            alive = false;
+            UpdateColor();
+        }
     }
 
 }

@@ -15,6 +15,8 @@ public class GameOfLife : MonoBehaviour
     public int xAxis = 20;
     public int yAxis = 20;
 
+    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,7 +44,7 @@ public class GameOfLife : MonoBehaviour
                 cells[x, y] = cellObj.GetComponent<CellScript>();
                 cells[x, y].x = x;
                 cells[x, y].y = y;
-                var random = new System.Random();
+                var random = new System.Random(); //the random in the example code gave errors
                 cells[x, y].alive = (random.Next(2) == 1);
             }
         }
@@ -51,7 +53,7 @@ public class GameOfLife : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     
