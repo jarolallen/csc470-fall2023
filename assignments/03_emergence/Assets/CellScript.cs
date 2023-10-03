@@ -25,7 +25,7 @@ public class CellScript : MonoBehaviour
 
         rend = gameObject.GetComponentInChildren<Renderer>();
         UpdateColor();
-        InvokeRepeating("NextGen", 0.2f, 0.2f); //feels better if it updates slower
+        InvokeRepeating("NextGen", 0.5f, 0.5f); //feels better if it updates slower
     }
 
     // Update is called once per frame
