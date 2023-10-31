@@ -9,6 +9,9 @@ TagManager:
   - key
   - gate
   - bat
+  - cannon
+  - floor
+  - prize
   layers:
   - Default
   - TransparentFX

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class destroypump : MonoBehaviour
 {
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +22,6 @@ public class destroypump : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
-        
     }
 
 }

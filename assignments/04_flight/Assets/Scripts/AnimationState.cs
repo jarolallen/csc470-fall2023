@@ -14,14 +14,30 @@ public class AnimationState : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.W) | Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.S) | Input.GetKey(KeyCode.D)) 
+        runCheck();
+        shootCheck();
+        
+    }
+    void runCheck ()
+    {
+        if (Input.GetKey(KeyCode.W) | Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.S) | Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.Space))
         {
             animator.SetBool("isRunning", true);
         }
         else
-        //if (!Input.GetKeyDown(KeyCode.W) | !Input.GetKeyDown(KeyCode.A) | !Input.GetKeyDown(KeyCode.S) | !Input.GetKeyDown(KeyCode.D))
         {
             animator.SetBool("isRunning", false);
+        }
+    }
+    void shootCheck ()
+    {
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            animator.SetBool("isShooting", true);
+        }
+        else
+        {
+            animator.SetBool("isShooting", false);
         }
     }
 }

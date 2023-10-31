@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static Unity.VisualScripting.Member;
 
 public class Character : MonoBehaviour
 {
@@ -20,6 +22,12 @@ public class Character : MonoBehaviour
     public GameObject cameraObject;
     public GameObject skullshotPrefab;
     public Transform respawnPoint;
+
+    public AudioSource source;
+    public AudioClip unlock;
+    public AudioClip obtained;
+    public AudioClip fail;
+    public AudioClip victory;
 
 
     // Start is called before the first frame update
@@ -71,7 +79,7 @@ public class Character : MonoBehaviour
         }
 
         //follow camera
-        Vector3 newCamPos = transform.position + -transform.forward * 25 + Vector3.up * 12;
+        Vector3 newCamPos = transform.position + -transform.forward * 30 + Vector3.up * 8;
         cameraObject.transform.position = newCamPos;
         cameraObject.transform.LookAt(transform);
 
@@ -91,12 +99,24 @@ public class Character : MonoBehaviour
         if (hit.gameObject.tag == ("Pumpkin"))
         {
             transform.position = respawnPoint.position;
+            //this doesn't actually work as expected
+            //character controller does not react to other objects hitting it
+            //only when the controller walks into an object
+            source.PlayOneShot(fail);
         }
         if (hit.gameObject.tag == ("key"))
         {
+            Destroy(hit.gameObject);
+            source.PlayOneShot(unlock);
+            source.PlayOneShot(obtained);
             GameObject[] gos = GameObject.FindGameObjectsWithTag("gate");
             foreach (GameObject go in gos)
                 Destroy(go);
+        }
+        if (hit.gameObject.tag == ("prize"))
+        { 
+            transform.position = respawnPoint.position;
+            source.PlayOneShot(victory);
         }
 
     }
