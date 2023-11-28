@@ -160,9 +160,9 @@ public class GameManager : MonoBehaviour
                     Instantiate(sawmillPrefab, hit.point + Vector3.up * 15, Quaternion.identity);
                     source.PlayOneShot(spawnSawmillSound);
                     totalResources -= 100;
-                    GameObject dust = Instantiate(spawnSawmillPrefab, hit.transform.position + Vector3.up * 10, Quaternion.identity);
-                    dust.transform.localScale = new Vector3(4, 10, 2);
-                    Destroy(dust, 3f);
+                    GameObject dust = Instantiate(spawnSawmillPrefab, hit.point + Vector3.up * 10, Quaternion.identity);
+                    dust.transform.localScale = new Vector3(40, 40, 20);
+                    Destroy(dust, 2f);
                     Debug.Log("sawmill done");
                 }
             }

@@ -1336,7 +1336,7 @@ MonoBehaviour:
   enoughResources: 0
   spawnSawmill: 0
   spawnPrefab: {fileID: 1912731163003908, guid: c5febdd93ab44d640b3eb37b768360bb, type: 3}
-  spawnSawmillPrefab: {fileID: 1344314377593938, guid: 9e03786a9517b604d8e930182607a128, type: 3}
+  spawnSawmillPrefab: {fileID: 1025285306637258, guid: d8f0099df63275647a8bcf646df1ca00, type: 3}
   treePrefab: {fileID: 3346190399984277056, guid: 291fe4de186849740b830b08cfb04d77, type: 3}
 --- !u!4 &2026342769
 Transform:
