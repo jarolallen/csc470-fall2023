@@ -48,24 +48,59 @@ public class EnemyScript : MonoBehaviour
                 distance = curDistance;
             }
         }
-        Debug.Log(closest);
         return closest;
-
     }
+    public GameObject FindClosestPlayerBase()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("playerbase");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
+    }
+
     void EnemyTargetLogic()
     {
         Vector3 amountToMove = Vector3.zero;
-        Vector3 closeGatherer = FindClosestGatherer().transform.position;
+        GameObject closega = FindClosestGatherer();
+        if (closega != null)
+        {
+            Vector3 closeGatherer = closega.transform.position;
+            Vector3 vectorToTarget = (closeGatherer - transform.position).normalized;
 
-        Vector3 vectorToTarget = (closeGatherer - transform.position).normalized;
+            float step = 5 * Time.deltaTime;
+            Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+            rotatedTowardsVector.y = 0;
+            transform.forward = rotatedTowardsVector;
 
-        float step = 5 * Time.deltaTime;
-        Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
-        rotatedTowardsVector.y = 0;
-        transform.forward = rotatedTowardsVector;
+            amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+            cc.Move(amountToMove);
+        }
+        if (closega == null)
+        {
+            Vector3 closePlayerBase = FindClosestPlayerBase().transform.position;
+            Vector3 vectorToTarget = (closePlayerBase - transform.position).normalized;
 
-        amountToMove = transform.forward * moveSpeed * Time.deltaTime;
-        cc.Move(amountToMove);
+            float step = 5 * Time.deltaTime;
+            Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+            rotatedTowardsVector.y = 0;
+            transform.forward = rotatedTowardsVector;
+
+            amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+            cc.Move(amountToMove);
+        }
+        
 
         //animator.SetFloat("speed", amountToMove.magnitude);
         bool walking = false;

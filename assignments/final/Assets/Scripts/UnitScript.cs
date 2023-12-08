@@ -245,25 +245,47 @@ public class UnitScript : MonoBehaviour
         }
         if (!hasTarget && this.tag == "attacker")
         {
-            //float x = UnityEngine.Random.Range(10, 990);
-            //float z = UnityEngine.Random.Range(10, 990);
-            //Vector3 randomTar = new Vector3(x, 0, z);
-            Vector3 closeEnemy = FindClosestEnemy().transform.position;
-
-            Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
-
-            float step = 5 * Time.deltaTime;
-            Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
-            rotatedTowardsVector.y = 0;
-            transform.forward = rotatedTowardsVector;
-
-            amountToMove = transform.forward * moveSpeed * Time.deltaTime;
-            cc.Move(amountToMove);
-
-            if (Vector3.Distance(transform.position, target) < 0.01f)
+            
+            GameObject attacktarget = FindClosestEnemy().gameObject;
+            if (attacktarget != null)
             {
-                hasTarget = false;
+                Vector3 closeEnemy = attacktarget.transform.position;
+
+                Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
+
+                float step = 5 * Time.deltaTime;
+                Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                rotatedTowardsVector.y = 0;
+                transform.forward = rotatedTowardsVector;
+
+                amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                cc.Move(amountToMove);
+                if (Vector3.Distance(transform.position, target) < 0.01f)
+                {
+                    hasTarget = false;
+                }
             }
+            if (attacktarget == null)
+            {
+                attacktarget = FindClosestEnemyBase();
+                Vector3 closeEnemy = attacktarget.transform.position;
+
+                Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
+
+                float step = 5 * Time.deltaTime;
+                Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                rotatedTowardsVector.y = 0;
+                transform.forward = rotatedTowardsVector;
+
+                amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                cc.Move(amountToMove);
+                if (Vector3.Distance(transform.position, target) < 0.01f)
+                {
+                    hasTarget = false;
+                }
+            }
+
+            
         }
 
         //animator.SetFloat("speed", amountToMove.magnitude);
@@ -305,6 +327,25 @@ public class UnitScript : MonoBehaviour
         Debug.Log(closest);
         return closest;
 
+    }
+    public GameObject FindClosestEnemyBase()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("enemybase");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
     }
     void deactivateFunction ()
     {
