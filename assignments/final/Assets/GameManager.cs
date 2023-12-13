@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour
     public GameObject treePrefab;
     private float numbTrees = 500;
 
+    public float playerBaseHP = 100;
+    public float enemyBaseHP = 100;
+
 
     void Awake()
     {
@@ -59,6 +62,7 @@ public class GameManager : MonoBehaviour
         countResource();
         SpawnSawmill();
         UpdateResourceDisplay();
+        healthReport();
         
     }
 
@@ -168,10 +172,18 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
     void UpdateResourceDisplay ()
     {
         totalResourceTxt.text = "Current Resources: "+ totalResources.ToString();
         currentUnitsTxt.text = "Active Units: "+ ObjectPool.instance.ActivePool.ToString();
     }
+
+    void healthReport()
+    {
+        Debug.Log("Playerbase hp: "+playerBaseHP + "Enemybase hp: " + enemyBaseHP);
+    }
+
+
 
 }

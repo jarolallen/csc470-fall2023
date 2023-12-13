@@ -28,7 +28,6 @@ public class UnitScript : MonoBehaviour
     private int resources = 0;
     private bool hasResource = false;
 
-    public int HP = 10;
 
     public AudioSource source;
     public AudioClip despawnUnitSound;
@@ -51,8 +50,6 @@ public class UnitScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-
         TargetLogic();
         GathererBehavior();
     }
@@ -187,16 +184,39 @@ public class UnitScript : MonoBehaviour
             }
             if (hit.collider.tag == "sawmill")
             {
-                animator.SetTrigger("full");
                 GameManager.SharedInstance.totalResources += resources;
-                resources = 0;
-                hasResource = false;
                 Debug.Log(GameManager.SharedInstance.totalResources + " is total and " + resources +"is personal");
-                hasTarget = false;
-                Invoke("deactivateFunction", 1);
+                ResetUnitState();
                 
             }
+            if (hit.collider.tag == "golem")
+            {
+                animator.SetTrigger("gather");
+                GameObject target = hit.collider.gameObject;
+            }
 
+        }
+    }
+
+    void CheckAttackerForward()
+    {
+        float castDistance = 15;
+        Vector3 positionToRayCastFrom = transform.position + Vector3.up * 1.8f;
+        Ray ray = new Ray(positionToRayCastFrom, transform.forward);
+        Debug.DrawRay(positionToRayCastFrom, transform.forward * castDistance, Color.green);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, castDistance))
+        {
+            if (hit.collider.tag == "enemy")
+            {
+                animator.SetTrigger("attack");
+                GameObject target = hit.collider.gameObject;
+            }
+            if (hit.collider.tag == "enemybase")
+            {
+                animator.SetTrigger("attack");
+                GameObject target = hit.collider.gameObject;
+            }
         }
     }
 
@@ -347,9 +367,20 @@ public class UnitScript : MonoBehaviour
         }
         return closest;
     }
+
+    public void ResetUnitState ()
+    {
+        animator.SetTrigger("full");
+        resources = 0;
+        hasResource = false;
+        hasTarget = false;
+        Invoke("deactivateFunction", 1);
+    }
     void deactivateFunction ()
     {
         gameObject.SetActive(false);
     }
+
+    
 
 }

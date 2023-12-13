@@ -16,6 +16,15 @@ public class EnemyScript : MonoBehaviour
     public AudioSource source;
     public AudioClip despawnEnemySound;
     public AudioClip enemyAttackSound;
+
+    public int damage = 5;
+    //public float attackCooldown;
+    //float _lastAttackTime;
+    Coroutine _attackInProgress;
+    int _playerContacts;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +38,7 @@ public class EnemyScript : MonoBehaviour
     void Update()
     {
         EnemyTargetLogic();
+        CheckEnemyForward();
         
     }
     public GameObject FindClosestGatherer()
@@ -109,5 +119,63 @@ public class EnemyScript : MonoBehaviour
             walking = true;
         }
         animator.SetBool("walking", walking);
+    }
+    void CheckEnemyForward()
+    {
+        float castDistance = 10;
+        Vector3 positionToRayCastFrom = transform.position + Vector3.up * 1.8f;
+        Ray ray = new Ray(positionToRayCastFrom, transform.forward);
+        Debug.DrawRay(positionToRayCastFrom, transform.forward * castDistance, Color.green);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, castDistance))
+        {
+            if (hit.collider.tag == "gatherer")
+            {
+                animator.SetTrigger("attack");
+                GameObject target = hit.collider.gameObject;
+                target.GetComponent<UnitScript>().ResetUnitState();
+            }
+            if (hit.collider.tag == "playerbase")
+            {
+                animator.SetTrigger("attack");
+                _playerContacts++;
+                if (_attackInProgress == null) 
+                    _attackInProgress = StartCoroutine(AttackLoop());
+       
+                animator.SetTrigger("attack");
+                /*GameObject target = hit.collider.gameObject;
+                // Abort if we already attacked recently.
+                if (Time.time - _lastAttackTime < attackCooldown) return;
+
+                if (target.gameObject.CompareTag("playerbase"))
+                {
+                    GameManager.SharedInstance.playerBaseHP -= damage;
+
+                    // Remember that we recently attacked.
+                    _lastAttackTime = Time.time;
+                }*/
+            }
+        }
+    }
+    public void ResetUnitState()
+    {
+        animator.SetTrigger("death");
+        Invoke("deactivateFunction", 1);
+    }
+    private IEnumerator AttackLoop()
+    {
+        while (_playerContacts > 0)
+        {
+            GameManager.SharedInstance.playerBaseHP -= damage;
+
+            // You can construct this once and cache it if you like.
+            yield return new WaitForSeconds(2);
+        }
+        _attackInProgress = null;
+    }
+
+    void deactivateFunction()
+    {
+        gameObject.SetActive(false);
     }
 }

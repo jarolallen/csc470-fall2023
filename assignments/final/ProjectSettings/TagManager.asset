@@ -8,6 +8,8 @@ TagManager:
   - tree
   - gatherer
   - enemy
+  - playerbase
+  - enemybase
   layers:
   - Default
   - TransparentFX
