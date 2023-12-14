@@ -17,7 +17,7 @@ public class UnitScript : MonoBehaviour
     public Color hoverColor;
     Color defaultColor;
 
-    float moveSpeed = 10;
+    float moveSpeed = 20;
 
     bool hover = false;
     public bool selected = false;
@@ -32,6 +32,11 @@ public class UnitScript : MonoBehaviour
     public AudioSource source;
     public AudioClip despawnUnitSound;
     public AudioClip gatherTreeSound;
+
+    public int damage = 5;
+    Coroutine _attackInProgress;
+    int _enemyContacts;
+
 
     // Start is called before the first frame update
     void Start()
@@ -50,8 +55,8 @@ public class UnitScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TargetLogic();
         GathererBehavior();
+        AttackerBehavior();
     }
 
     public void SetTarget(Vector3 t)
@@ -163,8 +168,8 @@ public class UnitScript : MonoBehaviour
 
     void CheckGatherForward()
     {
-        float castDistance = 15;
-        Vector3 positionToRayCastFrom = transform.position + Vector3.up * 1.8f;
+        float castDistance = 10;
+        Vector3 positionToRayCastFrom = transform.position + Vector3.up * 3f;
         Ray ray = new Ray(positionToRayCastFrom, transform.forward);
         Debug.DrawRay(positionToRayCastFrom, transform.forward * castDistance, Color.green);
         RaycastHit hit;
@@ -191,8 +196,13 @@ public class UnitScript : MonoBehaviour
             }
             if (hit.collider.tag == "golem")
             {
-                animator.SetTrigger("gather");
+                animator.SetTrigger("gather");  
+                GameObject gather = Instantiate(gatherPrefab, hit.transform.position, Quaternion.identity);
+                Destroy(gather, 1.5f);
                 GameObject target = hit.collider.gameObject;
+                target.GetComponent<GolemScript>().ResetUnitState();
+                resources += 5;
+                Debug.Log(resources);
             }
 
         }
@@ -200,7 +210,7 @@ public class UnitScript : MonoBehaviour
 
     void CheckAttackerForward()
     {
-        float castDistance = 15;
+        float castDistance = 10;
         Vector3 positionToRayCastFrom = transform.position + Vector3.up * 1.8f;
         Ray ray = new Ray(positionToRayCastFrom, transform.forward);
         Debug.DrawRay(positionToRayCastFrom, transform.forward * castDistance, Color.green);
@@ -211,119 +221,160 @@ public class UnitScript : MonoBehaviour
             {
                 animator.SetTrigger("attack");
                 GameObject target = hit.collider.gameObject;
+                target.GetComponent<EnemyScript>().ResetUnitState();
             }
             if (hit.collider.tag == "enemybase")
             {
-                animator.SetTrigger("attack");
-                GameObject target = hit.collider.gameObject;
+                _enemyContacts++;
+                if (_attackInProgress == null)
+                    _attackInProgress = StartCoroutine(AttackLoop());
             }
         }
     }
 
-    void TargetLogic()
-    {
-        Vector3 amountToMove = Vector3.zero;
-
-        if (hasTarget)
-        {
-            Vector3 vectorToTarget = (target - transform.position).normalized;
-
-            float step = 5 * Time.deltaTime;
-            Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
-            rotatedTowardsVector.y = 0;
-            transform.forward = rotatedTowardsVector;
-
-            amountToMove = transform.forward * moveSpeed * Time.deltaTime;
-            cc.Move(amountToMove);
-
-            if (Vector3.Distance(transform.position, target) < 0.01f)
-            {
-                hasTarget = false;
-            }
-        }
-        if (!hasTarget && this.tag == "gatherer")
-        {
-            //float x = UnityEngine.Random.Range(10, 990);
-            //float z = UnityEngine.Random.Range(10, 990);
-            //Vector3 randomTar = new Vector3(x, 0, z);
-            Vector3 closeTree = FindClosestTree().transform.position;
-
-            Vector3 vectorToTarget = (closeTree - transform.position).normalized;
-
-            float step = 5 * Time.deltaTime;
-            Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
-            rotatedTowardsVector.y = 0;
-            transform.forward = rotatedTowardsVector;
-
-            amountToMove = transform.forward * moveSpeed * Time.deltaTime;
-            cc.Move(amountToMove);
-
-            if (Vector3.Distance(transform.position, target) < 0.01f)
-            {
-                hasTarget = false;
-            }
-        }
-        if (!hasTarget && this.tag == "attacker")
-        {
-            
-            GameObject attacktarget = FindClosestEnemy().gameObject;
-            if (attacktarget != null)
-            {
-                Vector3 closeEnemy = attacktarget.transform.position;
-
-                Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
-
-                float step = 5 * Time.deltaTime;
-                Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
-                rotatedTowardsVector.y = 0;
-                transform.forward = rotatedTowardsVector;
-
-                amountToMove = transform.forward * moveSpeed * Time.deltaTime;
-                cc.Move(amountToMove);
-                if (Vector3.Distance(transform.position, target) < 0.01f)
-                {
-                    hasTarget = false;
-                }
-            }
-            if (attacktarget == null)
-            {
-                attacktarget = FindClosestEnemyBase();
-                Vector3 closeEnemy = attacktarget.transform.position;
-
-                Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
-
-                float step = 5 * Time.deltaTime;
-                Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
-                rotatedTowardsVector.y = 0;
-                transform.forward = rotatedTowardsVector;
-
-                amountToMove = transform.forward * moveSpeed * Time.deltaTime;
-                cc.Move(amountToMove);
-                if (Vector3.Distance(transform.position, target) < 0.01f)
-                {
-                    hasTarget = false;
-                }
-            }
-
-            
-        }
-
-        //animator.SetFloat("speed", amountToMove.magnitude);
-        bool walking = false;
-        if (amountToMove.magnitude > 0)
-        {
-            walking = true;
-        }
-        animator.SetBool("walking", walking);
-    }
     void GathererBehavior()
     {
         if (this.tag == "gatherer")
         {
+            Vector3 amountToMove = Vector3.zero;
+
+            if (hasTarget)
+            {
+                Vector3 vectorToTarget = (target - transform.position).normalized;
+
+                float step = 5 * Time.deltaTime;
+                Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                rotatedTowardsVector.y = 0;
+                transform.forward = rotatedTowardsVector;
+
+                amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                cc.Move(amountToMove);
+
+                if (Vector3.Distance(transform.position, target) < 0.01f)
+                {
+                    hasTarget = false;
+                }
+            }
+            if (!hasTarget)
+            {
+
+                GameObject attacktarget = FindClosestGolem();
+                if (attacktarget != null)
+                {
+                    Vector3 closeEnemy = attacktarget.transform.position;
+                    Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
+
+                    float step = 5 * Time.deltaTime;
+                    Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                    rotatedTowardsVector.y = 0;
+                    transform.forward = rotatedTowardsVector;
+
+                    amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    cc.Move(amountToMove);
+                    if (Vector3.Distance(transform.position, target) < 0.01f)
+                    {
+                        hasTarget = false;
+                    }
+                }
+                if (attacktarget == null)
+                {
+                    Vector3 closeEnemy = FindClosestTree().transform.position;
+                    Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
+
+                    float step = 5 * Time.deltaTime;
+                    Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                    rotatedTowardsVector.y = 0;
+                    transform.forward = rotatedTowardsVector;
+
+                    amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    cc.Move(amountToMove);
+                    if (Vector3.Distance(transform.position, target) < 0.01f)
+                    {
+                        hasTarget = false;
+                    }
+                }
+                bool walking = false;
+                if (amountToMove.magnitude > 0)
+                {
+                    walking = true;
+                }
+                animator.SetBool("walking", walking);
+            }
             CheckGatherForward();
             checkInventory();
             moveSawmill();
 
+        }
+    }
+    void AttackerBehavior()
+    {
+        if (this.tag == "attacker")
+        {
+            Vector3 amountToMove = Vector3.zero;
+
+            if (hasTarget)
+            {
+                Vector3 vectorToTarget = (target - transform.position).normalized;
+
+                float step = 5 * Time.deltaTime;
+                Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                rotatedTowardsVector.y = 0;
+                transform.forward = rotatedTowardsVector;
+
+                amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                cc.Move(amountToMove);
+
+                if (Vector3.Distance(transform.position, target) < 0.01f)
+                {
+                    hasTarget = false;
+                }
+            }
+            if (!hasTarget)
+            {
+
+                GameObject attacktarget = FindClosestEnemy();
+                if (attacktarget != null)
+                {
+                    Vector3 closeEnemy = attacktarget.transform.position;
+                    Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
+
+                    float step = 5 * Time.deltaTime;
+                    Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                    rotatedTowardsVector.y = 0;
+                    transform.forward = rotatedTowardsVector;
+
+                    amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    cc.Move(amountToMove);
+                    if (Vector3.Distance(transform.position, target) < 0.01f)
+                    {
+                        hasTarget = false;
+                    }
+                }
+                if (attacktarget == null)
+                {
+                    Vector3 closeEnemy = FindClosestEnemyBase().transform.position;
+                    Vector3 vectorToTarget = (closeEnemy - transform.position).normalized;
+
+                    float step = 5 * Time.deltaTime;
+                    Vector3 rotatedTowardsVector = Vector3.RotateTowards(transform.forward, vectorToTarget, step, 1);
+                    rotatedTowardsVector.y = 0;
+                    transform.forward = rotatedTowardsVector;
+
+                    amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    cc.Move(amountToMove);
+                    if (Vector3.Distance(transform.position, target) < 0.01f)
+                    {
+                        hasTarget = false;
+                    }
+                }
+            }
+            bool walking = false;
+            if (amountToMove.magnitude > 0)
+            {
+                walking = true;
+            }
+            animator.SetBool("walking", walking);
+            CheckAttackerForward();
         }
     }
 
@@ -366,6 +417,37 @@ public class UnitScript : MonoBehaviour
             }
         }
         return closest;
+    }
+    public GameObject FindClosestGolem()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("golem");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
+    }
+    private IEnumerator AttackLoop()
+    {
+        while (_enemyContacts > 0)
+        {
+            GameManager.SharedInstance.enemyBaseHP -= damage;
+            animator.SetTrigger("attack");
+
+            // You can construct this once and cache it if you like.
+            yield return new WaitForSeconds(2);
+        }
+        _attackInProgress = null;
     }
 
     public void ResetUnitState ()

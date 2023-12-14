@@ -49,11 +49,25 @@ public class ObjectPool : MonoBehaviour
             pool.Add(obj);
         }
 
+        for (int i = 0; i < attackerCount; i++)
+        {
+            GameObject obj = Instantiate(AttackerPrefab);
+            obj.SetActive(false);
+            attackerPool.Add(obj);
+        }
+
         for (int i = 0; i < enemyCount; i++)
         {
-            GameObject obj = Instantiate(unitPrefab);
+            GameObject obj = Instantiate(EnemyPrefab);
             obj.SetActive(false);
             enemyPool.Add(obj);
+        }
+
+        for (int i = 0; i < GolemCount; i++)
+        {
+            GameObject obj = Instantiate(GolemPrefab);
+            obj.SetActive(false);
+            GolemPool.Add(obj);
         }
 
     }
@@ -62,6 +76,8 @@ public class ObjectPool : MonoBehaviour
     void Update()
     {
         ActivePoolCounter();
+        ActiveAttackerPoolCounter();
+        ActiveEnemyPoolCounter();
     }
 
     public GameObject GetPooledObject()
@@ -75,7 +91,17 @@ public class ObjectPool : MonoBehaviour
         }
         return null;
     }
-
+    public GameObject GetAttackerPooledObject()
+    {
+        for (int i = 0; i < attackerPool.Count; i++)
+        {
+            if (!attackerPool[i].activeInHierarchy)
+            {
+                return attackerPool[i];
+            }
+        }
+        return null;
+    }
     public GameObject GetEnemyPooledObject()
     {
         for (int i = 0; i < enemyPool.Count; i++)
@@ -83,6 +109,18 @@ public class ObjectPool : MonoBehaviour
             if (!enemyPool[i].activeInHierarchy)
             {
                 return enemyPool[i];
+            }
+        }
+        return null;
+    }
+
+    public GameObject GetGolemPooledObject()
+    {
+        for (int i = 0; i < GolemPool.Count; i++)
+        {
+            if (!GolemPool[i].activeInHierarchy)
+            {
+                return GolemPool[i];
             }
         }
         return null;
@@ -100,7 +138,18 @@ public class ObjectPool : MonoBehaviour
         }
         ActivePool = active;
     }
-
+    public void ActiveAttackerPoolCounter()
+    {
+        int active = 0;
+        for (int i = 0; i < attackerPool.Count; i++)
+        {
+            if (attackerPool[i].activeInHierarchy)
+            {
+                active += 1;
+            }
+        }
+        ActiveAttacker = active;
+    }
     public void ActiveEnemyPoolCounter()
     {
         int active = 0;
@@ -112,5 +161,17 @@ public class ObjectPool : MonoBehaviour
             }
         }
         ActiveEnemy = active;
+    }
+    public void ActiveGolemPoolCounter()
+    {
+        int active = 0;
+        for (int i = 0; i < GolemPool.Count; i++)
+        {
+            if (GolemPool[i].activeInHierarchy)
+            {
+                active += 1;
+            }
+        }
+        ActiveGolem = active;
     }
 }

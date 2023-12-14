@@ -10,6 +10,8 @@ TagManager:
   - enemy
   - playerbase
   - enemybase
+  - attacker
+  - golem
   layers:
   - Default
   - TransparentFX

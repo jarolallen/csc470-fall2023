@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     public float playerBaseHP = 100;
     public float enemyBaseHP = 100;
 
+    Coroutine _spawnInProgress;
 
     void Awake()
     {
@@ -59,11 +60,14 @@ public class GameManager : MonoBehaviour
     {
         MoveUnit();
         SpawnUnit();
+        SpawnAttacker();
         countResource();
         SpawnSawmill();
         UpdateResourceDisplay();
         healthReport();
-        
+        if (_spawnInProgress == null)
+            _spawnInProgress = StartCoroutine(SpawnEnemy());
+
     }
 
     public void SelectUnit(UnitScript unit)
@@ -126,7 +130,32 @@ public class GameManager : MonoBehaviour
 
     void SpawnUnit()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftShift))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 999999))
+            {
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("ground"))
+                {
+                    GameObject unit = ObjectPool.instance.GetPooledObject();
+
+                    if (unit != null)
+                    {
+                        unit.transform.position = hit.point;
+                        unit.SetActive(true);
+                        source.PlayOneShot(spawnUnitSound);
+                        GameObject spawn = Instantiate(spawnPrefab, unit.transform.position + Vector3.up * 3, Quaternion.identity);
+                        spawn.transform.localScale = new Vector3(6, 6, 6); // change its local scale in x y z format
+                        Destroy(spawn, 0.25f);
+                    }
+                }
+            }
+        }
+    }
+    void SpawnAttacker()
+    {
+        if (Input.GetMouseButtonDown(1) && Input.GetKey(KeyCode.LeftShift) && (totalResources >= 20))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -135,13 +164,14 @@ public class GameManager : MonoBehaviour
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("ground"))
                 {
                     //Instantiate(unitPrefab, hit.point, Quaternion.identity);
-                    GameObject unit = ObjectPool.instance.GetPooledObject();
+                    GameObject unit = ObjectPool.instance.GetAttackerPooledObject();
 
                     if (unit != null)
                     {
                         unit.transform.position = hit.point;
                         unit.SetActive(true);
                         source.PlayOneShot(spawnUnitSound);
+                        totalResources -= 20;
                         GameObject spawn = Instantiate(spawnPrefab, unit.transform.position + Vector3.up * 3, Quaternion.identity);
                         spawn.transform.localScale = new Vector3(6, 6, 6); // change its local scale in x y z format
                         Destroy(spawn, 0.25f);
@@ -172,6 +202,28 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    
+    private IEnumerator SpawnEnemy()
+    {
+        while (enemyBaseHP >= 0)
+        {
+
+            GameObject enemy = ObjectPool.instance.GetEnemyPooledObject();
+            GameObject golem = ObjectPool.instance.GetGolemPooledObject();
+            float x = UnityEngine.Random.Range(500, 800);
+            float z = UnityEngine.Random.Range(500, 800);
+            float a = UnityEngine.Random.Range(500, 800);
+            float b = UnityEngine.Random.Range(500, 800);
+            Vector3 pos1 = new Vector3(x, 0, z);
+            Vector3 pos2 = new Vector3(a, 0, b);
+            enemy.transform.position = pos1;
+            enemy.SetActive(true);
+            golem.transform.position = pos2;
+            golem.SetActive(true);
+            yield return new WaitForSeconds(10);
+        }
+        _spawnInProgress = null;
+    }
 
     void UpdateResourceDisplay ()
     {
@@ -182,6 +234,14 @@ public class GameManager : MonoBehaviour
     void healthReport()
     {
         Debug.Log("Playerbase hp: "+playerBaseHP + "Enemybase hp: " + enemyBaseHP);
+        if (playerBaseHP <= 0)
+        {
+            Debug.Log("GameOver");
+        }
+        if (enemyBaseHP <= 0)
+        {
+            Debug.Log("You Win!");
+        }
     }
 
 

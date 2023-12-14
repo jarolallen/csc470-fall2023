@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyScript : MonoBehaviour
+public class GolemScript : MonoBehaviour
 {
     public CharacterController cc;
     public Animator animator;
@@ -38,13 +38,13 @@ public class EnemyScript : MonoBehaviour
     void Update()
     {
         EnemyTargetLogic();
-        CheckEnemyForward();
-        
+        CheckGolemForward();
+
     }
-    public GameObject FindClosestGatherer()
+    public GameObject FindClosestAttacker()
     {
         GameObject[] gos;
-        gos = GameObject.FindGameObjectsWithTag("gatherer");
+        gos = GameObject.FindGameObjectsWithTag("attacker");
         GameObject closest = null;
         float distance = Mathf.Infinity;
         Vector3 position = transform.position;
@@ -83,7 +83,7 @@ public class EnemyScript : MonoBehaviour
     void EnemyTargetLogic()
     {
         Vector3 amountToMove = Vector3.zero;
-        GameObject closega = FindClosestGatherer();
+        GameObject closega = FindClosestAttacker();
         if (closega != null)
         {
             Vector3 closeGatherer = closega.transform.position;
@@ -110,7 +110,7 @@ public class EnemyScript : MonoBehaviour
             amountToMove = transform.forward * moveSpeed * Time.deltaTime;
             cc.Move(amountToMove);
         }
-        
+
 
         //animator.SetFloat("speed", amountToMove.magnitude);
         bool walking = false;
@@ -120,7 +120,7 @@ public class EnemyScript : MonoBehaviour
         }
         animator.SetBool("walking", walking);
     }
-    void CheckEnemyForward()
+    void CheckGolemForward()
     {
         float castDistance = 10;
         Vector3 positionToRayCastFrom = transform.position + Vector3.up * 1.8f;
@@ -129,16 +129,16 @@ public class EnemyScript : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, castDistance))
         {
-            if (hit.collider.tag == "gatherer")
+            if (hit.collider.tag == "attacker")
             {
                 animator.SetTrigger("attack");
                 GameObject target = hit.collider.gameObject;
                 target.GetComponent<UnitScript>().ResetUnitState();
             }
             if (hit.collider.tag == "playerbase")
-            {              
+            {
                 _playerContacts++;
-                if (_attackInProgress == null) 
+                if (_attackInProgress == null)
                     _attackInProgress = StartCoroutine(AttackLoop());
                 /*GameObject target = hit.collider.gameObject;
                 // Abort if we already attacked recently.
@@ -154,7 +154,6 @@ public class EnemyScript : MonoBehaviour
             }
         }
     }
-
     public void ResetUnitState()
     {
         animator.SetTrigger("death");
@@ -172,6 +171,23 @@ public class EnemyScript : MonoBehaviour
         }
         _attackInProgress = null;
     }
+    
+    float gravityModifier = 1.5f;
+    float yVelocity = 0;
+
+    void gravity()
+    {
+        if (!cc.isGrounded)
+        {
+            yVelocity += Physics.gravity.y * gravityModifier * Time.deltaTime;
+
+        }
+
+        Vector3 move = transform.position;
+        move.y = yVelocity;
+        cc.Move(move * Time.deltaTime * moveSpeed);
+    }
+
 
     void deactivateFunction()
     {
