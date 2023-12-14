@@ -36,6 +36,8 @@ public class UnitScript : MonoBehaviour
     public int damage = 5;
     Coroutine _attackInProgress;
     int _enemyContacts;
+    float gravityModifier = 1.5f;
+    float yVelocity = 0;
 
 
     // Start is called before the first frame update
@@ -55,8 +57,13 @@ public class UnitScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GathererBehavior();
-        AttackerBehavior();
+        Invoke("GathererBehavior", 0.5f);
+        Invoke("AttackerBehavior", 0.5f);
+        if (!cc.isGrounded)
+        {
+            yVelocity += Physics.gravity.y * gravityModifier * Time.deltaTime;
+
+        }
     }
 
     public void SetTarget(Vector3 t)
@@ -248,6 +255,7 @@ public class UnitScript : MonoBehaviour
                 transform.forward = rotatedTowardsVector;
 
                 amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                amountToMove.y = yVelocity;
                 cc.Move(amountToMove);
 
                 if (Vector3.Distance(transform.position, target) < 0.01f)
@@ -270,6 +278,7 @@ public class UnitScript : MonoBehaviour
                     transform.forward = rotatedTowardsVector;
 
                     amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    amountToMove.y = yVelocity;
                     cc.Move(amountToMove);
                     if (Vector3.Distance(transform.position, target) < 0.01f)
                     {
@@ -287,6 +296,7 @@ public class UnitScript : MonoBehaviour
                     transform.forward = rotatedTowardsVector;
 
                     amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    amountToMove.y = yVelocity;
                     cc.Move(amountToMove);
                     if (Vector3.Distance(transform.position, target) < 0.01f)
                     {
@@ -322,6 +332,7 @@ public class UnitScript : MonoBehaviour
                 transform.forward = rotatedTowardsVector;
 
                 amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                amountToMove.y = yVelocity;
                 cc.Move(amountToMove);
 
                 if (Vector3.Distance(transform.position, target) < 0.01f)
@@ -344,6 +355,7 @@ public class UnitScript : MonoBehaviour
                     transform.forward = rotatedTowardsVector;
 
                     amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    amountToMove.y = yVelocity;
                     cc.Move(amountToMove);
                     if (Vector3.Distance(transform.position, target) < 0.01f)
                     {
@@ -361,6 +373,7 @@ public class UnitScript : MonoBehaviour
                     transform.forward = rotatedTowardsVector;
 
                     amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+                    amountToMove.y = yVelocity;
                     cc.Move(amountToMove);
                     if (Vector3.Distance(transform.position, target) < 0.01f)
                     {

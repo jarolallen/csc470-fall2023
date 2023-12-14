@@ -23,6 +23,9 @@ public class EnemyScript : MonoBehaviour
     Coroutine _attackInProgress;
     int _playerContacts;
 
+    float gravityModifier = 1.5f;
+    float yVelocity = 0;
+
 
 
     // Start is called before the first frame update
@@ -37,9 +40,13 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        EnemyTargetLogic();
-        CheckEnemyForward();
-        
+        Invoke("EnemyTargetLogic", 2.0f);
+        Invoke("CheckEnemyForward", 2.0f);
+        if (!cc.isGrounded)
+        {
+            yVelocity += Physics.gravity.y * gravityModifier * Time.deltaTime;
+
+        }
     }
     public GameObject FindClosestGatherer()
     {
@@ -95,6 +102,7 @@ public class EnemyScript : MonoBehaviour
             transform.forward = rotatedTowardsVector;
 
             amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+            amountToMove.y = yVelocity;
             cc.Move(amountToMove);
         }
         if (closega == null)
@@ -108,6 +116,7 @@ public class EnemyScript : MonoBehaviour
             transform.forward = rotatedTowardsVector;
 
             amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+            amountToMove.y = yVelocity;
             cc.Move(amountToMove);
         }
         

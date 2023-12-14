@@ -210,10 +210,10 @@ public class GameManager : MonoBehaviour
 
             GameObject enemy = ObjectPool.instance.GetEnemyPooledObject();
             GameObject golem = ObjectPool.instance.GetGolemPooledObject();
-            float x = UnityEngine.Random.Range(500, 800);
-            float z = UnityEngine.Random.Range(500, 800);
-            float a = UnityEngine.Random.Range(500, 800);
-            float b = UnityEngine.Random.Range(500, 800);
+            float x = UnityEngine.Random.Range(400, 650);
+            float z = UnityEngine.Random.Range(400, 650);
+            float a = UnityEngine.Random.Range(400, 650);
+            float b = UnityEngine.Random.Range(400, 650);
             Vector3 pos1 = new Vector3(x, 0, z);
             Vector3 pos2 = new Vector3(a, 0, b);
             enemy.transform.position = pos1;

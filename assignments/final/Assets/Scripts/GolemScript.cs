@@ -23,6 +23,8 @@ public class GolemScript : MonoBehaviour
     Coroutine _attackInProgress;
     int _playerContacts;
 
+    float gravityModifier = 1.5f;
+    float yVelocity = 0;
 
 
     // Start is called before the first frame update
@@ -37,10 +39,17 @@ public class GolemScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        EnemyTargetLogic();
-        CheckGolemForward();
+        Invoke("EnemyTargetLogic", 2.0f);
+        Invoke("CheckGolemForward", 2.0f);
+        if (!cc.isGrounded)
+        {
+            yVelocity += Physics.gravity.y * gravityModifier * Time.deltaTime;
+
+        }
+
 
     }
+
     public GameObject FindClosestAttacker()
     {
         GameObject[] gos;
@@ -95,6 +104,7 @@ public class GolemScript : MonoBehaviour
             transform.forward = rotatedTowardsVector;
 
             amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+            amountToMove.y = yVelocity;
             cc.Move(amountToMove);
         }
         if (closega == null)
@@ -108,6 +118,7 @@ public class GolemScript : MonoBehaviour
             transform.forward = rotatedTowardsVector;
 
             amountToMove = transform.forward * moveSpeed * Time.deltaTime;
+            amountToMove.y = yVelocity;
             cc.Move(amountToMove);
         }
 
@@ -171,22 +182,7 @@ public class GolemScript : MonoBehaviour
         }
         _attackInProgress = null;
     }
-    
-    float gravityModifier = 1.5f;
-    float yVelocity = 0;
-
-    void gravity()
-    {
-        if (!cc.isGrounded)
-        {
-            yVelocity += Physics.gravity.y * gravityModifier * Time.deltaTime;
-
-        }
-
-        Vector3 move = transform.position;
-        move.y = yVelocity;
-        cc.Move(move * Time.deltaTime * moveSpeed);
-    }
+ 
 
 
     void deactivateFunction()

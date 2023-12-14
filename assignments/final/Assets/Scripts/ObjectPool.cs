@@ -14,6 +14,8 @@ public class ObjectPool : MonoBehaviour
     private int attackerCount = 10;
     public int ActiveAttacker;
 
+    public int friendlies;
+
     private List<GameObject> enemyPool = new List<GameObject>();
     private int enemyCount = 10;
     public int ActiveEnemy;
@@ -22,6 +24,7 @@ public class ObjectPool : MonoBehaviour
     private int GolemCount = 5;
     public int ActiveGolem;
 
+    public int enemies;
 
 
 
@@ -69,6 +72,9 @@ public class ObjectPool : MonoBehaviour
             obj.SetActive(false);
             GolemPool.Add(obj);
         }
+
+        friendlies = ActivePool + ActiveAttacker;
+        enemies = ActiveEnemy + ActiveGolem;
 
     }
 
