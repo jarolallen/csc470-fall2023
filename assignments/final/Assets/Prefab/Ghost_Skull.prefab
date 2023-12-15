@@ -251,7 +251,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cc: {fileID: 4494603570922416782}
   animator: {fileID: 0}
-  attackPrefab: {fileID: 0}
+  attackPrefab: {fileID: 1025285306637258, guid: d8f0099df63275647a8bcf646df1ca00, type: 3}
   source: {fileID: 0}
   despawnEnemySound: {fileID: 0}
   enemyAttackSound: {fileID: 0}
+  damage: 5

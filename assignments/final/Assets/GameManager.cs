@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
+using static UnityEngine.EventSystems.EventTrigger;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,10 +19,14 @@ public class GameManager : MonoBehaviour
     public GameObject sawmillPrefab;
     public TMP_Text totalResourceTxt;
     public TMP_Text currentUnitsTxt;
+    public TMP_Text currentAttackersTxt;
+    public TMP_Text playerHPTxt;
+    public TMP_Text enemyHPTxt;
 
     public AudioSource source;
     public AudioClip spawnUnitSound;
     public AudioClip spawnSawmillSound;
+    public AudioClip spawnEnemySound;
 
 
     UnitScript selectedUnit;
@@ -31,14 +37,21 @@ public class GameManager : MonoBehaviour
 
     public GameObject spawnPrefab;
     public GameObject spawnSawmillPrefab;
+    public GameObject enemySpawnPrefab;
 
     public GameObject treePrefab;
-    private float numbTrees = 500;
+    private float numbTrees = 200;
 
-    public float playerBaseHP = 100;
-    public float enemyBaseHP = 100;
+    [System.NonSerialized]  public float playerBaseHP = 100;
+    [System.NonSerialized]  public float enemyBaseHP = 100;
 
     Coroutine _spawnInProgress;
+
+
+    public Animator playerKing;
+    public Animator enemyKing;
+
+    float spawntimer = 5; //controls how fast enemies are summoned
 
     void Awake()
     {
@@ -52,7 +65,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        generateTrees();
+        generateTreesA();
+        generateTreesB();
     }
 
     // Update is called once per frame
@@ -85,16 +99,27 @@ public class GameManager : MonoBehaviour
         UnitSelectedHappened?.Invoke(unit);
     }
 
-     void generateTrees()
+     void generateTreesA()
     {
         for (int i = 0; i < numbTrees; i++)
         {
-            float x = UnityEngine.Random.Range(10, 990);
-            float z = UnityEngine.Random.Range(10, 990);
+            float x = UnityEngine.Random.Range(0, 500);
+            float z = UnityEngine.Random.Range(500, 1000);
             Vector3 pos = new Vector3(x, 10, z);
             GameObject floorObj = Instantiate(treePrefab, pos, Quaternion.identity);
         }
         
+    }
+    void generateTreesB()
+    {
+        for (int i = 0; i < numbTrees; i++)
+        {
+            float x = UnityEngine.Random.Range(500, 1000);
+            float z = UnityEngine.Random.Range(0, 500);
+            Vector3 pos = new Vector3(x, 10, z);
+            GameObject floorObj = Instantiate(treePrefab, pos, Quaternion.identity);
+        }
+
     }
 
     void countResource()
@@ -205,22 +230,42 @@ public class GameManager : MonoBehaviour
     
     private IEnumerator SpawnEnemy()
     {
-        while (enemyBaseHP >= 0)
+        if (enemyBaseHP >= 0)
         {
-
-            GameObject enemy = ObjectPool.instance.GetEnemyPooledObject();
-            GameObject golem = ObjectPool.instance.GetGolemPooledObject();
-            float x = UnityEngine.Random.Range(400, 650);
-            float z = UnityEngine.Random.Range(400, 650);
-            float a = UnityEngine.Random.Range(400, 650);
-            float b = UnityEngine.Random.Range(400, 650);
-            Vector3 pos1 = new Vector3(x, 0, z);
-            Vector3 pos2 = new Vector3(a, 0, b);
-            enemy.transform.position = pos1;
-            enemy.SetActive(true);
-            golem.transform.position = pos2;
-            golem.SetActive(true);
-            yield return new WaitForSeconds(10);
+            int random = UnityEngine.Random.Range(0, 2);
+            if (random == 0)
+            {
+                GameObject enemy = ObjectPool.instance.GetEnemyPooledObject();
+                if (enemy != null)
+                {
+                    float x = UnityEngine.Random.Range(400, 650);
+                    float z = UnityEngine.Random.Range(400, 650);
+                    Vector3 pos1 = new Vector3(x, 0, z);
+                    source.PlayOneShot(spawnEnemySound);
+                    GameObject spawn = Instantiate(enemySpawnPrefab, pos1 + Vector3.up * 3, Quaternion.identity);
+                    spawn.transform.localScale = new Vector3(6, 6, 6);
+                    Destroy(spawn, 1f);
+                    enemy.transform.position = pos1;
+                    enemy.SetActive(true);
+                }
+            }
+            if (random == 1)
+            {
+                GameObject golem = ObjectPool.instance.GetGolemPooledObject();
+                if (golem != null)
+                {
+                    float x = UnityEngine.Random.Range(400, 650);
+                    float z = UnityEngine.Random.Range(400, 650);
+                    Vector3 pos1 = new Vector3(x, 0, z);
+                    source.PlayOneShot(spawnEnemySound);
+                    GameObject spawn = Instantiate(enemySpawnPrefab, pos1 + Vector3.up * 6, Quaternion.identity);
+                    spawn.transform.localScale = new Vector3(12, 12, 12);
+                    Destroy(spawn, 1f);
+                    golem.transform.position = pos1;
+                    golem.SetActive(true);
+                }
+            }
+            yield return new WaitForSeconds(spawntimer);
         }
         _spawnInProgress = null;
     }
@@ -228,19 +273,31 @@ public class GameManager : MonoBehaviour
     void UpdateResourceDisplay ()
     {
         totalResourceTxt.text = "Current Resources: "+ totalResources.ToString();
-        currentUnitsTxt.text = "Active Units: "+ ObjectPool.instance.ActivePool.ToString();
+        currentUnitsTxt.text = "Active Gatherers: "+ ObjectPool.instance.ActivePool.ToString();
+        currentAttackersTxt.text = "Active Attackers: "+ ObjectPool.instance.ActiveAttacker.ToString();
+        playerHPTxt.text = "Player Base HP: "+playerBaseHP.ToString();
+        enemyHPTxt.text = "Enemy Base HP: "+enemyBaseHP.ToString();
     }
 
     void healthReport()
     {
-        Debug.Log("Playerbase hp: "+playerBaseHP + "Enemybase hp: " + enemyBaseHP);
+        if (playerBaseHP <= 40)
+        {
+            playerKing.SetTrigger("die");
+        }
+        if (enemyBaseHP <= 40)
+        {
+            enemyKing.SetTrigger("die");
+        }
         if (playerBaseHP <= 0)
         {
             Debug.Log("GameOver");
+            SceneManager.LoadScene("Lose");
         }
         if (enemyBaseHP <= 0)
         {
             Debug.Log("You Win!");
+            SceneManager.LoadScene("Win");
         }
     }
 

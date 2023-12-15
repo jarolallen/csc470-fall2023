@@ -7,17 +7,17 @@ public class ObjectPool : MonoBehaviour
     public static ObjectPool instance;
 
     private List<GameObject> pool = new List<GameObject>();
-    private int poolCount = 20;
+    private int poolCount = 10;
     public int ActivePool;
 
     private List<GameObject> attackerPool = new List<GameObject>();
-    private int attackerCount = 10;
+    private int attackerCount = 5;
     public int ActiveAttacker;
 
     public int friendlies;
 
     private List<GameObject> enemyPool = new List<GameObject>();
-    private int enemyCount = 10;
+    private int enemyCount = 5;
     public int ActiveEnemy;
 
     private List<GameObject> GolemPool = new List<GameObject>();
@@ -32,7 +32,6 @@ public class ObjectPool : MonoBehaviour
     [SerializeField] private GameObject AttackerPrefab;
     [SerializeField] private GameObject EnemyPrefab;
     [SerializeField] private GameObject GolemPrefab;
-    //singleton objectpool to make sure it's done
 
     private void Awake()
     {

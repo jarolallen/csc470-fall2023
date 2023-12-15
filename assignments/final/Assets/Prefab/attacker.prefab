@@ -161,13 +161,13 @@ MonoBehaviour:
   bodyRenderer: {fileID: 142721030613963206}
   cc: {fileID: 5204828585917346635}
   animator: {fileID: 0}
-  gatherPrefab: {fileID: 0}
+  gatherPrefab: {fileID: 1025285306637258, guid: d8f0099df63275647a8bcf646df1ca00, type: 3}
   selectedColor: {r: 0.79510665, g: 0.4449537, b: 0.9528302, a: 0}
   hoverColor: {r: 1, g: 0, b: 0, a: 0}
   selected: 0
   source: {fileID: 2388095147656109725}
-  despawnUnitSound: {fileID: 0}
-  gatherTreeSound: {fileID: 0}
+  despawnUnitSound: {fileID: 8300000, guid: d7f52aed233d0d845aa9a2bad313a4ac, type: 3}
+  gatherTreeSound: {fileID: 8300000, guid: 706399609c9c063479f3bdb249f02dda, type: 3}
   damage: 5
 --- !u!82 &2388095147656109725
 AudioSource:

@@ -23,7 +23,7 @@ public class GolemScript : MonoBehaviour
     Coroutine _attackInProgress;
     int _playerContacts;
 
-    float gravityModifier = 1.5f;
+    float gravityModifier = 1f;
     float yVelocity = 0;
 
 
@@ -39,14 +39,15 @@ public class GolemScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Invoke("EnemyTargetLogic", 2.0f);
-        Invoke("CheckGolemForward", 2.0f);
+        //Invoke("EnemyTargetLogic", 2.0f);
+        //Invoke("CheckGolemForward", 2.0f);
+        EnemyTargetLogic();
+        CheckGolemForward();
         if (!cc.isGrounded)
         {
             yVelocity += Physics.gravity.y * gravityModifier * Time.deltaTime;
 
         }
-
 
     }
 

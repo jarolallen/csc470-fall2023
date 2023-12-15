@@ -36,7 +36,7 @@ public class UnitScript : MonoBehaviour
     public int damage = 5;
     Coroutine _attackInProgress;
     int _enemyContacts;
-    float gravityModifier = 1.5f;
+    float gravityModifier = 1f;
     float yVelocity = 0;
 
 
@@ -57,13 +57,15 @@ public class UnitScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Invoke("GathererBehavior", 0.5f);
-        Invoke("AttackerBehavior", 0.5f);
+        //Invoke("GathererBehavior", 1f);
+        //Invoke("AttackerBehavior", 1f);
+        GathererBehavior();
+        AttackerBehavior();
         if (!cc.isGrounded)
         {
             yVelocity += Physics.gravity.y * gravityModifier * Time.deltaTime;
 
-        }
+        } 
     }
 
     public void SetTarget(Vector3 t)
@@ -204,12 +206,10 @@ public class UnitScript : MonoBehaviour
             if (hit.collider.tag == "golem")
             {
                 animator.SetTrigger("gather");  
-                GameObject gather = Instantiate(gatherPrefab, hit.transform.position, Quaternion.identity);
-                Destroy(gather, 1.5f);
+                //GameObject gather = Instantiate(gatherPrefab, hit.transform.position, Quaternion.identity);
+                //Destroy(gather, 1.5f);
                 GameObject target = hit.collider.gameObject;
                 target.GetComponent<GolemScript>().ResetUnitState();
-                resources += 5;
-                Debug.Log(resources);
             }
 
         }
@@ -465,7 +465,6 @@ public class UnitScript : MonoBehaviour
 
     public void ResetUnitState ()
     {
-        animator.SetTrigger("full");
         resources = 0;
         hasResource = false;
         hasTarget = false;
