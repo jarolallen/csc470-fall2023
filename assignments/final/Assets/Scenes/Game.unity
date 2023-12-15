@@ -1924,8 +1924,8 @@ MonoBehaviour:
   spawnSawmillPrefab: {fileID: 1025285306637258, guid: d8f0099df63275647a8bcf646df1ca00, type: 3}
   enemySpawnPrefab: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}
   treePrefab: {fileID: 3346190399984277056, guid: 291fe4de186849740b830b08cfb04d77, type: 3}
-  playerKing: {fileID: 995441200618197597, guid: 6a53c00756282c647abfa7e6e922a6f1, type: 3}
-  enemyKing: {fileID: 1557151579911762720, guid: fb8a7c3f9fd0d6940bfa63efef3a642b, type: 3}
+  playerKing: {fileID: 1944553053578321667}
+  enemyKing: {fileID: 8479325549407693695}
 --- !u!4 &2026342769
 Transform:
   m_ObjectHideFlags: 0
@@ -2162,6 +2162,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6a53c00756282c647abfa7e6e922a6f1, type: 3}
+--- !u!95 &1944553053578321667 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 995441200618197597, guid: 6a53c00756282c647abfa7e6e922a6f1, type: 3}
+  m_PrefabInstance: {fileID: 1944553053578321666}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5524298909515338391
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2288,6 +2293,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb8a7c3f9fd0d6940bfa63efef3a642b, type: 3}
+--- !u!95 &8479325549407693695 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1557151579911762720, guid: fb8a7c3f9fd0d6940bfa63efef3a642b, type: 3}
+  m_PrefabInstance: {fileID: 8479325549407693694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
